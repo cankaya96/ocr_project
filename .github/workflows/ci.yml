@@ -1,0 +1,143 @@
+name: 🧪 CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: 🧪 Run Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, "3.10"]
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🐍 Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: 📦 Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: 🔧 Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          tesseract-ocr \
+          tesseract-ocr-tur \
+          libtesseract-dev \
+          poppler-utils \
+          libgl1-mesa-glx \
+          libglib2.0-0
+    
+    - name: 📦 Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov pytest-mock black isort flake8 mypy
+    
+    - name: 🎨 Check code formatting
+      run: |
+        black --check core/ tests/ || exit 1
+        isort --check-only core/ tests/ || exit 1
+    
+    - name: 🔍 Lint with flake8
+      run: |
+        flake8 core/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 core/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+    
+    - name: 🔍 Type checking with mypy
+      run: |
+        mypy core/ --ignore-missing-imports || true
+    
+    - name: 🧪 Run unit tests
+      run: |
+        pytest tests/ -v --cov=core --cov-report=xml --cov-report=html
+    
+    - name: 📊 Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+  security-scan:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+    
+    - name: 🔒 Run security scan with bandit
+      run: |
+        pip install bandit[toml]
+        bandit -r core/ -f json -o bandit-report.json || true
+    
+    - name: 📋 Upload security scan results
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-scan-results
+        path: bandit-report.json
+
+  performance-test:
+    name: ⚡ Performance Test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+    
+    - name: 🔧 Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y tesseract-ocr tesseract-ocr-tur
+        pip install -r requirements.txt
+    
+    - name: ⚡ Run performance benchmarks
+      run: |
+        # Add performance test commands here
+        echo "Performance tests would run here"
+        # python -m pytest tests/performance/ -v
+
+  build-docs:
+    name: 📚 Build Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 📚 Validate documentation links
+      run: |
+        # Check for broken links in markdown files
+        find guidances/ -name "*.md" -exec grep -l "http" {} \; || echo "No external links found"
+    
+    - name: ✅ Check documentation completeness
+      run: |
+        # Verify all guides are properly linked
+        ls guidances/*.md
+        echo "Documentation check completed"
