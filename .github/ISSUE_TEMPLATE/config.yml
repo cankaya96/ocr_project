@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Documentation
+    url: https://github.com/[your-username]/ocr_project/tree/main/guidances
+    about: Check our comprehensive guides for common questions and setup help
+  - name: 💬 Discussions
+    url: https://github.com/[your-username]/ocr_project/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 🔧 Troubleshooting
+    url: https://github.com/[your-username]/ocr_project/blob/main/guidances/06-troubleshooting-guide.md
+    about: Common issues and solutions for the OCR system
