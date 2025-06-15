@@ -1,6 +1,34 @@
 # OCR Document Processing System
 
-A modular OCR document processing system for classifying Turkish documents and extracting identification numbers (TC/VKN).
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![OCR](https://img.shields.io/badge/OCR-Tesseract-green.svg)](https://github.com/tesseract-ocr/tesseract)
+[![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-red.svg)](https://opencv.org/)
+
+A modular OCR document processing system for classifying Turkish documents and extracting identification numbers (TC/VKN). This project is developed for complex document archive separation, grouping, and identification processes at **MasterFabric** and is actively used by **Ulusal Faktoring** for their document management workflow.
+
+## 👥 Contributors
+
+- **[@cankaya96](https://github.com/cankaya96)** - Architecture Designer & Lead Developer
+  - Planned and designed the core architecture of the project
+  - Responsible for foundational development and implementation
+
+- **[@gurkanfikretgunak](https://github.com/gurkanfikretgunak)** - Project Structure & Code Standards Lead
+  - Established project context and boilerplate standards
+  - Managed code-style structure and business requirements
+  - Supervised project management and development workflow
+
+## 🏢 Company References
+
+This project is developed by **MasterFabric** and is actively used in production by:
+
+### MasterFabric
+- **Website**: [https://www.masterfabric.co](https://www.masterfabric.co)
+- **LinkedIn**: [https://www.linkedin.com/company/masterfabric](https://www.linkedin.com/company/masterfabric)
+
+### Ulusal Faktoring
+- **Website**: [https://www.ulusalfaktoring.com/](https://www.ulusalfaktoring.com/)
+- **LinkedIn**: [https://www.linkedin.com/company/ulusalfaktoring/](https://www.linkedin.com/company/ulusalfaktoring/)
 
 ## 🏗️ Architecture
 
@@ -216,3 +244,13 @@ is_valid = TCValidator.is_valid_tc("12345678901")
 ```
 
 The old `ocr_processor.py` still works for backward compatibility, but new development should use the modular structure.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2025 [@cankaya96](https://github.com/cankaya96) and [@gurkanfikretgunak](https://github.com/gurkanfikretgunak)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
