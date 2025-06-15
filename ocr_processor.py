@@ -6,7 +6,7 @@ import re
 from datetime import datetime
 from pdf2image import convert_from_path
 
-# Kategori ve anahtar kelimeler
+# Categories and keywords
 categories = {
     "trade_registry_gazette": [
         'türkiye ticaret sicili gazetesi', 'ticaret sicili müdürlüğü'
@@ -66,20 +66,20 @@ categories = {
     "unprocessed_return_payment_order": [
         'işlenmemiş iade', 'ödenmemiş ödeme emri', 'vergi iadesi talebi', 'beyanname bilgileri'
     ],
-    "vergi_levhası":[
+    "tax_plate":[
         'vergi levhası', 'gelir idaresi', 'levhası', 'beyan olunan matrah', 'matrah', 'vergi türü', 'vergi kimlik', 'tahakkuk eden vergi',
         'intvd.gib.gov.tr'
     ],
-    "faaliyet_belgesi":[
+    "activity_certificate":[
         'faaliyet sicili', 'ticaret sicil tasdiknamesi', 'ticaret sicil', 'faaliyet belgesi', 'commercial activity',
           'nace kodu', 'nace code', 'faaliyet bilgileri', 'faaliyet kodu', 'sicil kayıt sureti', 'ticaret', 'sicil kayıt', 'sicil'
     ],
-    "bagımsız_denetim_belgesi":[
+    "independent_audit_certificate":[
         'bağımsız denetime tabi', 'denetime tabi', 'bağımsız denetim yükümlülüğü', 'bağımsız denetim' , 'smmm', 'ymm', 'mali müşavirlerce'
     ]
 }
 
-#Dosya döndürme
+# File rotation
 def rotate_image(image_cv2, angle):
     if angle == 0:
         return image_cv2
@@ -100,7 +100,7 @@ def classify_text(text):
             return cat
     return 'others'
 
-# TC doğrulama
+# TC validation
 def is_valid_tc(tc: str) -> bool:
     if not re.fullmatch(r'\d{11}', tc):
         return False
@@ -172,7 +172,7 @@ def classify_document(file_path, return_id=False):
         img = cv2.imread(file_path)
 
     if img is None:
-        raise ValueError("Görsel yüklenemedi")
+        raise ValueError("Image could not be loaded")
 
     tc_found, vkn_found = None, None
 
@@ -189,7 +189,7 @@ def classify_document(file_path, return_id=False):
         except Exception:
             continue
 
-    print("İlk OCR başarısız, görsel büyütülerek tekrar deneniyor...")
+    print("Initial OCR failed, retrying with upscaled image...")
     upscale_img = cv2.resize(img, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
 
     for angle in [0, 90, 180, 270]:
@@ -202,7 +202,7 @@ def classify_document(file_path, return_id=False):
                 vkn_found = extract_vkn_from_text(text)
             category = classify_text(text)
             if category != 'others':
-                print("Başarı: büyütülmüş görsel ile sınıflandırıldı.")
+                print("Success: classified with upscaled image.")
                 return (category, tc_found or vkn_found) if return_id else category
         except Exception:
             continue

@@ -12,14 +12,14 @@ CATEGORY_FOLDERS = [
     'power_of_attorney', 'abf', 'cheque_customer_screening',
     'promissory_note', 'offset_and_payment_order',
     'unprocessed_return_payment_order', 'others', 'error_files',
-    'factoring_agreement', 'vergi_levhası', 'faaliyet_belgesi', 'bagımsız_denetim_belgesi'
+    'factoring_agreement', 'tax_plate', 'activity_certificate', 'independent_audit_certificate'
 ]
 
-# Klasörleri oluştur
+# Create folders
 for folder in CATEGORY_FOLDERS:
     os.makedirs(os.path.join(UPLOAD_FOLDER, folder), exist_ok=True)
 
-# Unicode karakterleri normalize et (Windows/macOS uyumluluğu)
+# Normalize Unicode characters (Windows/macOS compatibility)
 def normalize_filename(filename):
     return unicodedata.normalize('NFKC', filename)
 
@@ -35,11 +35,11 @@ def process_files_in_directory(directory_path):
     total = len(all_files)
 
     for idx, file_path in enumerate(all_files, start=1):
-        file_name = normalize_filename(os.path.basename(file_path))  # normalize et
+        file_name = normalize_filename(os.path.basename(file_path))  # normalize
         file_root, file_ext = os.path.splitext(file_name)
 
         try:
-            # OCR işlemi ve TC/VKN tespiti
+            # OCR process and TC/VKN detection
             category, detected_id = classify_document(file_path, return_id=True)
             dest_folder = os.path.join(UPLOAD_FOLDER, category)
             os.makedirs(dest_folder, exist_ok=True)
@@ -47,7 +47,7 @@ def process_files_in_directory(directory_path):
             if detected_id:
                 new_file_name = generate_unique_filename(detected_id, dest_folder, file_ext[1:])
                 final_path = os.path.join(dest_folder, new_file_name)
-                print(f"[{idx}/{total}] {file_name} → {category} (YENİ AD: {new_file_name})")
+                print(f"[{idx}/{total}] {file_name} → {category} (NEW NAME: {new_file_name})")
             else:
                 new_file_name = file_name
                 final_path = os.path.join(dest_folder, new_file_name)
@@ -72,13 +72,13 @@ def process_files_in_directory(directory_path):
             folder_counts["error_files"] += 1
             print(f"[{idx}/{total}] {file_name} → error_files ❌ {str(e)[:50]}")
 
-    print("\n📊 İşlem tamamlandı:")
+    print("\n📊 Process completed:")
     for cat, count in folder_counts.items():
-        print(f"- {cat}: {count} dosya")
+        print(f"- {cat}: {count} files")
 
 if __name__ == "__main__":
-    directory_path = "Belgeler"
+    directory_path = "Documents"
     if not os.path.exists(directory_path):
-        print(f"HATA: '{directory_path}' klasörü bulunamadı.")
+        print(f"ERROR: '{directory_path}' folder not found.")
     else:
         process_files_in_directory(directory_path)
