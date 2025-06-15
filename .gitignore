@@ -249,3 +249,6 @@ api_keys.txt
 # Logs
 *.log
 logs/
+
+# Core module cache
+core/__pycache__/
