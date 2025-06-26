@@ -189,6 +189,80 @@ pip install pytesseract pillow opencv-python pdf2image
 python main.py
 ```
 
+## 🤖 AI-Powered Cheque Information Extraction
+
+### New Feature: Gemini Integration for Cheque Processing
+
+Extract detailed information from cheque images using Google's Gemini AI model:
+
+#### Setup
+1. **Install Gemini dependencies**:
+```bash
+pip install -r requirements_gemini.txt
+```
+
+2. **Get a free Gemini API key**:
+   - Visit: https://makersuite.google.com/app/apikey
+   - Create your free API key
+
+3. **Set environment variable**:
+```bash
+export GEMINI_API_KEY="your_api_key_here"
+```
+
+#### Extract Cheque Information
+```bash
+python extract_cheque_info.py
+```
+
+#### Extracted Data Fields
+The system extracts the following information from cheque images:
+- `_fileName` - Original image filename
+- `_iban` - IBAN number (TR + 24 digits)
+- `_checkNo` - Cheque number
+- `_branchCode` - Bank branch code
+- `_accountNumber` - Account number
+- `_tcknVkn` - TC Identity or Tax number
+- `_bankCode` - Bank identification code
+- `_micrCode` - MICR code from bottom of cheque
+- `_checkAmount` - Cheque amount (numeric value)
+
+#### Programmatic Usage
+```python
+from core import extract_cheque_information
+
+# Extract from all cheque files
+results_file = extract_cheque_information(
+    gemini_api_key="your_api_key",
+    output_file="my_cheque_results.json"
+)
+
+# Process specific files
+from core import ChequeProcessor
+processor = ChequeProcessor("your_api_key")
+results = processor.process_all_cheques()
+```
+
+#### Output Format
+Results are saved as JSON with the following structure:
+```json
+[
+  {
+    "_fileName": "cheque_001.jpg",
+    "_iban": "TR330006100519786457841326",
+    "_checkNo": "0001234567",
+    "_branchCode": "0519",
+    "_accountNumber": "12345678",
+    "_tcknVkn": "12345678901",
+    "_bankCode": "0061",
+    "_micrCode": "c0001234567c 0519c 0061c",
+    "_checkAmount": "1500.00"
+  }
+]
+```
+
+Fields that cannot be extracted are set to `null`.
+
 ## 🧪 Testing
 
 Each module can be tested independently:
